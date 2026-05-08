@@ -794,6 +794,377 @@ export function MergeDialog({
 }
 
 /**
+ * Image Convert dialog - select output format
+ * Available for image files only
+ */
+export function ImgConvertDialog({ file, onSelect }: DialogProps<{ format: string }>) {
+  const dialog = useDialog()
+  const [showCustom, setShowCustom] = useState(false)
+
+  const formatOptions: DialogSelectOption<string>[] = [
+    {
+      title: "JPEG",
+      value: "jpg",
+      description: "Lossy, good for photos",
+      category: "Format",
+    },
+    {
+      title: "PNG",
+      value: "png",
+      description: "Lossless, good for graphics",
+      category: "Format",
+    },
+    {
+      title: "WebP",
+      value: "webp",
+      description: "Modern format, small size",
+      category: "Format",
+    },
+    {
+      title: "BMP",
+      value: "bmp",
+      description: "Uncompressed, large file",
+      category: "Format",
+    },
+    {
+      title: "TIFF",
+      value: "tiff",
+      description: "Lossless, high quality",
+      category: "Format",
+    },
+    {
+      title: "Custom...",
+      value: "__custom__",
+      description: "Enter a custom format",
+      category: "Other",
+    },
+  ]
+
+  if (showCustom) {
+    return (
+      <DialogPrompt
+        title="Enter image format"
+        placeholder="e.g., jpg, png, webp"
+        onConfirm={(value) => {
+          dialog.close()
+          onSelect({ format: value.trim().toLowerCase() })
+        }}
+        onCancel={() => setShowCustom(false)}
+      />
+    )
+  }
+
+  return (
+    <DialogSelect
+      title="Convert image format"
+      placeholder="Search formats..."
+      options={formatOptions}
+      onSelect={(option) => {
+        if (option.value === "__custom__") {
+          setShowCustom(true)
+        } else {
+          dialog.close()
+          onSelect({ format: option.value })
+        }
+      }}
+    />
+  )
+}
+
+/**
+ * Image Scale dialog - select dimensions or percentage
+ */
+export function ImgScaleDialog({
+  file,
+  onSelect,
+}: DialogProps<{ width?: number; height?: number; percent?: number }>) {
+  const dialog = useDialog()
+  const [showCustom, setShowCustom] = useState(false)
+
+  const scaleOptions: DialogSelectOption<
+    { width?: number; height?: number; percent?: number } | "__custom__"
+  >[] = [
+    {
+      title: "25%",
+      value: { percent: 25 },
+      description: "Quarter of original size",
+      category: "Percentage",
+    },
+    {
+      title: "50%",
+      value: { percent: 50 },
+      description: "Half of original size",
+      category: "Percentage",
+    },
+    {
+      title: "75%",
+      value: { percent: 75 },
+      description: "Three quarters of original size",
+      category: "Percentage",
+    },
+    {
+      title: "150%",
+      value: { percent: 150 },
+      description: "1.5x original size",
+      category: "Percentage",
+    },
+    {
+      title: "200%",
+      value: { percent: 200 },
+      description: "Double original size",
+      category: "Percentage",
+    },
+    {
+      title: "320px wide",
+      value: { width: 320 },
+      description: "Thumbnail size",
+      category: "Width",
+    },
+    {
+      title: "640px wide",
+      value: { width: 640 },
+      description: "Standard web size",
+      category: "Width",
+    },
+    {
+      title: "800px wide",
+      value: { width: 800 },
+      description: "Medium size",
+      category: "Width",
+    },
+    {
+      title: "1200px wide",
+      value: { width: 1200 },
+      description: "Large size",
+      category: "Width",
+    },
+    {
+      title: "Custom...",
+      value: "__custom__",
+      description: "Enter custom dimensions or percentage",
+      category: "Other",
+    },
+  ]
+
+  if (showCustom) {
+    return (
+      <DialogPrompt
+        title="Scale image"
+        placeholder="width[,height] or percent% (e.g., 800 or 800,600 or 50%)"
+        onConfirm={(value) => {
+          dialog.close()
+          if (value.includes("%")) {
+            onSelect({ percent: parseInt(value, 10) })
+          } else {
+            const parts = value.split(",").map((s) => parseInt(s.trim(), 10))
+            onSelect({ width: parts[0], height: parts[1] })
+          }
+        }}
+        onCancel={() => setShowCustom(false)}
+      />
+    )
+  }
+
+  return (
+    <DialogSelect
+      title="Scale image"
+      placeholder="Search scale options..."
+      options={scaleOptions}
+      onSelect={(option) => {
+        if (option.value === "__custom__") {
+          setShowCustom(true)
+        } else {
+          dialog.close()
+          onSelect(option.value as { width?: number; height?: number; percent?: number })
+        }
+      }}
+    />
+  )
+}
+
+/**
+ * Image Crop dialog - select aspect ratio or custom region
+ */
+export function ImgCropDialog({
+  file,
+  onSelect,
+}: DialogProps<{ width?: number; height?: number; x?: number; y?: number; aspect?: string }>) {
+  const dialog = useDialog()
+  const [showCustom, setShowCustom] = useState(false)
+
+  const cropOptions: DialogSelectOption<
+    { aspect?: string; width?: number; height?: number; x?: number; y?: number } | "__custom__"
+  >[] = [
+    {
+      title: "Square 1:1",
+      value: { aspect: "1:1" },
+      description: "Perfect square crop",
+      category: "Aspect Ratio",
+    },
+    {
+      title: "Portrait 4:5",
+      value: { aspect: "4:5" },
+      description: "Instagram portrait",
+      category: "Aspect Ratio",
+    },
+    {
+      title: "Landscape 16:9",
+      value: { aspect: "16:9" },
+      description: "Widescreen",
+      category: "Aspect Ratio",
+    },
+    {
+      title: "Landscape 4:3",
+      value: { aspect: "4:3" },
+      description: "Standard display",
+      category: "Aspect Ratio",
+    },
+    {
+      title: "Landscape 3:2",
+      value: { aspect: "3:2" },
+      description: "Classic photo",
+      category: "Aspect Ratio",
+    },
+    {
+      title: "Portrait 9:16",
+      value: { aspect: "9:16" },
+      description: "Vertical video / stories",
+      category: "Aspect Ratio",
+    },
+    {
+      title: "Custom region...",
+      value: "__custom__",
+      description: "Enter custom crop dimensions",
+      category: "Other",
+    },
+  ]
+
+  if (showCustom) {
+    return (
+      <DialogPrompt
+        title="Crop image"
+        placeholder="width,height,x,y or aspect (e.g., 400,400,0,0 or 1:1)"
+        onConfirm={(value) => {
+          dialog.close()
+          if (value.includes(":")) {
+            onSelect({ aspect: value.trim() })
+          } else {
+            const parts = value.split(",").map((s) => parseInt(s.trim(), 10))
+            onSelect({
+              width: parts[0],
+              height: parts[1],
+              x: parts[2],
+              y: parts[3],
+            })
+          }
+        }}
+        onCancel={() => setShowCustom(false)}
+      />
+    )
+  }
+
+  return (
+    <DialogSelect
+      title="Crop image"
+      placeholder="Search crop options..."
+      options={cropOptions}
+      onSelect={(option) => {
+        if (option.value === "__custom__") {
+          setShowCustom(true)
+        } else {
+          dialog.close()
+          onSelect(
+            option.value as {
+              aspect?: string
+              width?: number
+              height?: number
+              x?: number
+              y?: number
+            }
+          )
+        }
+      }}
+    />
+  )
+}
+
+/**
+ * Image Compress dialog - select quality level
+ */
+export function ImgCompressDialog({
+  file,
+  onSelect,
+}: DialogProps<{ quality?: string; qualityValue?: number }>) {
+  const dialog = useDialog()
+  const [showCustom, setShowCustom] = useState(false)
+
+  const compressOptions: DialogSelectOption<
+    { quality?: string; qualityValue?: number } | "__custom__"
+  >[] = [
+    {
+      title: "Lossless",
+      value: { quality: "lossless" },
+      description: "Best quality, largest file",
+      category: "Quality",
+    },
+    {
+      title: "High",
+      value: { quality: "high" },
+      description: "High quality, larger file",
+      category: "Quality",
+    },
+    {
+      title: "Medium",
+      value: { quality: "medium" },
+      description: "Balanced quality and size",
+      category: "Quality",
+    },
+    {
+      title: "Low",
+      value: { quality: "low" },
+      description: "Smaller file, lower quality",
+      category: "Quality",
+    },
+    {
+      title: "Custom value...",
+      value: "__custom__",
+      description: "Enter quality 1-100",
+      category: "Other",
+    },
+  ]
+
+  if (showCustom) {
+    return (
+      <DialogPrompt
+        title="Compress image quality"
+        placeholder="Quality 1-100 (lower = smaller file)"
+        onConfirm={(value) => {
+          dialog.close()
+          onSelect({ qualityValue: parseInt(value, 10) })
+        }}
+        onCancel={() => setShowCustom(false)}
+      />
+    )
+  }
+
+  return (
+    <DialogSelect
+      title="Compress image"
+      placeholder="Search quality options..."
+      options={compressOptions}
+      onSelect={(option) => {
+        if (option.value === "__custom__") {
+          setShowCustom(true)
+        } else {
+          dialog.close()
+          onSelect(option.value as { quality?: string; qualityValue?: number })
+        }
+      }}
+    />
+  )
+}
+
+/**
  * Get available commands based on file type
  */
 export function getAvailableCommands(file: FileNode): {
@@ -805,16 +1176,18 @@ export function getAvailableCommands(file: FileNode): {
   trim: boolean
   thumbnail: boolean
   merge: boolean
+  scale: boolean
+  crop: boolean
 } {
   const mediaType = file.mediaType
 
   return {
     // Info available for all media files
     info: mediaType === "video" || mediaType === "audio" || mediaType === "image",
-    // Compress available for video and audio
-    compress: mediaType === "video" || mediaType === "audio",
-    // Convert available for video and audio
-    convert: mediaType === "video" || mediaType === "audio",
+    // Compress available for video, audio, and image
+    compress: mediaType === "video" || mediaType === "audio" || mediaType === "image",
+    // Convert available for video, audio, and image
+    convert: mediaType === "video" || mediaType === "audio" || mediaType === "image",
     // Extract available for video and audio
     extract: mediaType === "video" || mediaType === "audio",
     // GIF only for video
@@ -825,5 +1198,8 @@ export function getAvailableCommands(file: FileNode): {
     thumbnail: mediaType === "video",
     // Merge available for video and audio
     merge: mediaType === "video" || mediaType === "audio",
+    // Image-specific operations
+    scale: mediaType === "image",
+    crop: mediaType === "image",
   }
 }

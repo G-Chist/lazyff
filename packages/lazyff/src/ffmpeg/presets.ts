@@ -171,6 +171,63 @@ export const MEDIA_EXTENSIONS = {
 } as const
 
 /**
+ * Image format presets for conversion
+ */
+export const IMAGE_FORMATS = {
+  jpg: {
+    extension: "jpg",
+    encoder: "mjpeg",
+    description: "JPEG image (lossy)",
+  },
+  png: {
+    extension: "png",
+    encoder: "png",
+    description: "PNG image (lossless)",
+  },
+  webp: {
+    extension: "webp",
+    encoder: "libwebp",
+    description: "WebP image (lossy/lossless)",
+  },
+  bmp: {
+    extension: "bmp",
+    encoder: "bmp",
+    description: "BMP image (uncompressed)",
+  },
+  tiff: {
+    extension: "tiff",
+    encoder: "tiff",
+    description: "TIFF image (lossless)",
+  },
+} as const
+
+export type ImageFormat = keyof typeof IMAGE_FORMATS
+
+/**
+ * Image quality presets (0-100 scale normalized across formats)
+ */
+export const IMAGE_QUALITY_PRESETS = {
+  low: {
+    quality: 30,
+    description: "Smaller file, lower quality",
+  },
+  medium: {
+    quality: 60,
+    description: "Balanced quality and size",
+  },
+  high: {
+    quality: 85,
+    description: "High quality, larger file",
+  },
+  lossless: {
+    quality: 100,
+    description: "Best quality",
+  },
+} as const
+
+export type ImageQualityPreset = keyof typeof IMAGE_QUALITY_PRESETS
+
+/**
  * Get media type from file extension
  */
 export function getMediaType(extension: string): "video" | "audio" | "image" | null {

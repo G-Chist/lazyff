@@ -35,6 +35,8 @@ export function DialogHelp() {
             { label: "GIF", cmd: "/gif (g)" },
             { label: "Thumbnail", cmd: "/thumbnail (t)" },
             { label: "Merge", cmd: "/merge (m)" },
+            { label: "Scale image", cmd: "/scale (s)" },
+            { label: "Crop image", cmd: "/crop (x)" },
             { label: "Info", cmd: "/info (i)" },
             { label: "Theme", cmd: "/theme (ctrl+t)" },
             { label: "Help", cmd: "/help (h)" },

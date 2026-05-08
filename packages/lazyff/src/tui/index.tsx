@@ -18,6 +18,10 @@ import {
   TrimDialog,
   ThumbnailDialog,
   MergeDialog,
+  ImgConvertDialog,
+  ImgScaleDialog,
+  ImgCropDialog,
+  ImgCompressDialog,
   getAvailableCommands,
 } from "./components/command-dialogs.tsx"
 import { ThemeDialog } from "./components/theme-dialog.tsx"
@@ -87,6 +91,10 @@ function MainApp() {
     executeTrim,
     executeThumbnail,
     executeMerge,
+    executeImgConvert,
+    executeImgScale,
+    executeImgCrop,
+    executeImgCompress,
     selectedFile,
   } = useCommands()
 
@@ -132,20 +140,41 @@ function MainApp() {
         break
 
       case "c":
-        // Compress command - open dialog to select compression target
+        // Compress - video/audio uses CompressDialog, image uses ImgCompressDialog
         if (available.compress) {
-          dialog.replace(() => (
-            <CompressDialog file={selectedFile} onSelect={(options) => executeCompress(options)} />
-          ))
+          if (selectedFile.mediaType === "image") {
+            dialog.replace(() => (
+              <ImgCompressDialog
+                file={selectedFile}
+                onSelect={(options) => executeImgCompress(options)}
+              />
+            ))
+          } else {
+            dialog.replace(() => (
+              <CompressDialog
+                file={selectedFile}
+                onSelect={(options) => executeCompress(options)}
+              />
+            ))
+          }
         }
         break
 
       case "v":
-        // Convert command - open dialog to select output format
+        // Convert - video/audio uses ConvertDialog, image uses ImgConvertDialog
         if (available.convert) {
-          dialog.replace(() => (
-            <ConvertDialog file={selectedFile} onSelect={(options) => executeConvert(options)} />
-          ))
+          if (selectedFile.mediaType === "image") {
+            dialog.replace(() => (
+              <ImgConvertDialog
+                file={selectedFile}
+                onSelect={(options) => executeImgConvert(options)}
+              />
+            ))
+          } else {
+            dialog.replace(() => (
+              <ConvertDialog file={selectedFile} onSelect={(options) => executeConvert(options)} />
+            ))
+          }
         }
         break
 
@@ -200,6 +229,24 @@ function MainApp() {
               siblingFiles={siblingFiles}
               onSelect={(options) => executeMerge(options)}
             />
+          ))
+        }
+        break
+
+      case "s":
+        // Scale image - only for image files
+        if (available.scale) {
+          dialog.replace(() => (
+            <ImgScaleDialog file={selectedFile} onSelect={(options) => executeImgScale(options)} />
+          ))
+        }
+        break
+
+      case "x":
+        // Crop image - only for image files
+        if (available.crop) {
+          dialog.replace(() => (
+            <ImgCropDialog file={selectedFile} onSelect={(options) => executeImgCrop(options)} />
           ))
         }
         break
@@ -301,6 +348,26 @@ function MainApp() {
                         </text>
                         <text attributes={TextAttributes.DIM} fg={theme.textMuted}>
                           merge
+                        </text>
+                      </>
+                    )}
+                    {available.scale && (
+                      <>
+                        <text attributes={TextAttributes.BOLD} fg={theme.text}>
+                          s
+                        </text>
+                        <text attributes={TextAttributes.DIM} fg={theme.textMuted}>
+                          scale
+                        </text>
+                      </>
+                    )}
+                    {available.crop && (
+                      <>
+                        <text attributes={TextAttributes.BOLD} fg={theme.text}>
+                          x
+                        </text>
+                        <text attributes={TextAttributes.DIM} fg={theme.textMuted}>
+                          crop
                         </text>
                       </>
                     )}

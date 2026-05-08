@@ -50,7 +50,20 @@ export {
 export * from "./ffmpeg/types"
 
 // Commands - programmatic functions for TUI usage
-export { convert, info, trim, compress, extract, merge, gif, thumbnail } from "./commands/index.ts"
+export {
+  convert,
+  info,
+  trim,
+  compress,
+  extract,
+  merge,
+  gif,
+  thumbnail,
+  imgConvert,
+  imgScale,
+  imgCrop,
+  imgCompress,
+} from "./commands/index.ts"
 
 // Command types
 export type {
@@ -60,4 +73,8 @@ export type {
   MergeOptions,
   GifOptions,
   ThumbnailOptions,
+  ImgConvertOptions,
+  ImgScaleOptions,
+  ImgCropOptions,
+  ImgCompressOptions,
 } from "./commands/index.ts"

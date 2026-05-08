@@ -8,6 +8,10 @@ import { gif, type GifOptions } from "../../commands/gif.ts"
 import { trim, type TrimOptions } from "../../commands/trim.ts"
 import { thumbnail, type ThumbnailOptions } from "../../commands/thumbnail.ts"
 import { merge, type MergeOptions } from "../../commands/merge.ts"
+import { imgConvert, type ImgConvertOptions } from "../../commands/img-convert.ts"
+import { imgScale, type ImgScaleOptions } from "../../commands/img-scale.ts"
+import { imgCrop, type ImgCropOptions } from "../../commands/img-crop.ts"
+import { imgCompress, type ImgCompressOptions } from "../../commands/img-compress.ts"
 import { formatError } from "../../ffmpeg/errors.ts"
 
 /**
@@ -377,6 +381,170 @@ export function useCommands() {
     [addMessage, updateMessage]
   )
 
+  /**
+   * Execute img-convert command (requires dialog for options)
+   */
+  const executeImgConvert = useCallback(
+    async (options: Omit<ImgConvertOptions, "input">) => {
+      if (!selectedFile || selectedFile.type === "directory") {
+        addMessage({ type: "assistant", content: "No file selected", status: "error" })
+        return
+      }
+
+      const msgId = addMessage({
+        type: "assistant",
+        content: `Converting image ${selectedFile.name}...`,
+        status: "running",
+      })
+
+      try {
+        const result = await imgConvert({ input: selectedFile.path, ...options })
+
+        if (result.success) {
+          updateMessage(msgId, {
+            content: `Converted to ${result.outputPath}`,
+            status: "success",
+          })
+        } else {
+          updateMessage(msgId, {
+            content: result.error || "Image conversion failed",
+            status: "error",
+          })
+        }
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error)
+        updateMessage(msgId, {
+          content: formatError(errorMsg),
+          status: "error",
+        })
+      }
+    },
+    [selectedFile, addMessage, updateMessage]
+  )
+
+  /**
+   * Execute img-scale command
+   */
+  const executeImgScale = useCallback(
+    async (options: Omit<ImgScaleOptions, "input">) => {
+      if (!selectedFile || selectedFile.type === "directory") {
+        addMessage({ type: "assistant", content: "No file selected", status: "error" })
+        return
+      }
+
+      const msgId = addMessage({
+        type: "assistant",
+        content: `Scaling ${selectedFile.name}...`,
+        status: "running",
+      })
+
+      try {
+        const result = await imgScale({ input: selectedFile.path, ...options })
+
+        if (result.success) {
+          updateMessage(msgId, {
+            content: `Scaled to ${result.outputPath}`,
+            status: "success",
+          })
+        } else {
+          updateMessage(msgId, {
+            content: result.error || "Image scaling failed",
+            status: "error",
+          })
+        }
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error)
+        updateMessage(msgId, {
+          content: formatError(errorMsg),
+          status: "error",
+        })
+      }
+    },
+    [selectedFile, addMessage, updateMessage]
+  )
+
+  /**
+   * Execute img-crop command
+   */
+  const executeImgCrop = useCallback(
+    async (options: Omit<ImgCropOptions, "input">) => {
+      if (!selectedFile || selectedFile.type === "directory") {
+        addMessage({ type: "assistant", content: "No file selected", status: "error" })
+        return
+      }
+
+      const msgId = addMessage({
+        type: "assistant",
+        content: `Cropping ${selectedFile.name}...`,
+        status: "running",
+      })
+
+      try {
+        const result = await imgCrop({ input: selectedFile.path, ...options })
+
+        if (result.success) {
+          updateMessage(msgId, {
+            content: `Cropped to ${result.outputPath}`,
+            status: "success",
+          })
+        } else {
+          updateMessage(msgId, {
+            content: result.error || "Image crop failed",
+            status: "error",
+          })
+        }
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error)
+        updateMessage(msgId, {
+          content: formatError(errorMsg),
+          status: "error",
+        })
+      }
+    },
+    [selectedFile, addMessage, updateMessage]
+  )
+
+  /**
+   * Execute img-compress command
+   */
+  const executeImgCompress = useCallback(
+    async (options: Omit<ImgCompressOptions, "input">) => {
+      if (!selectedFile || selectedFile.type === "directory") {
+        addMessage({ type: "assistant", content: "No file selected", status: "error" })
+        return
+      }
+
+      const msgId = addMessage({
+        type: "assistant",
+        content: `Compressing image ${selectedFile.name}...`,
+        status: "running",
+      })
+
+      try {
+        const result = await imgCompress({ input: selectedFile.path, ...options })
+
+        if (result.success) {
+          updateMessage(msgId, {
+            content: `Compressed to ${result.outputPath}`,
+            status: "success",
+          })
+        } else {
+          updateMessage(msgId, {
+            content: result.error || "Image compression failed",
+            status: "error",
+          })
+        }
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error)
+        updateMessage(msgId, {
+          content: formatError(errorMsg),
+          status: "error",
+        })
+      }
+    },
+    [selectedFile, addMessage, updateMessage]
+  )
+
   return {
     executeInfo,
     executeCompress,
@@ -386,6 +554,10 @@ export function useCommands() {
     executeTrim,
     executeThumbnail,
     executeMerge,
+    executeImgConvert,
+    executeImgScale,
+    executeImgCrop,
+    executeImgCompress,
     selectedFile,
   }
 }

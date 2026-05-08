@@ -10,6 +10,10 @@ import {
   mergeCommand,
   gifCommand,
   thumbnailCommand,
+  imgConvertCommand,
+  imgScaleCommand,
+  imgCropCommand,
+  imgCompressCommand,
 } from "./commands/index.ts"
 import { VERSION, GITHUB_REPO, checkForUpdate } from "./version.ts"
 
@@ -51,6 +55,11 @@ async function main() {
     .command(extractCommand)
     .command(gifCommand)
     .command(thumbnailCommand)
+    // Image operations
+    .command(imgConvertCommand)
+    .command(imgScaleCommand)
+    .command(imgCropCommand)
+    .command(imgCompressCommand)
     // Info
     .command(infoCommand)
     .command(
